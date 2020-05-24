@@ -1,5 +1,8 @@
 from bs4 import BeautifulSoup
 import urllib.request
+import requests
+import os
+
 
 def links():
     directory =  'http://transcripts.foreverdreaming.org/viewforum.php?f=177&start='
@@ -26,8 +29,22 @@ def scriptLinks():
 
 def retrieveScripts():
     scripts = scriptLinks()
+    parser = 'html.parser'
 
     for scriptLink in scripts:
+        resp = urllib.request.urlopen(scriptLink)
+        soup = BeautifulSoup(resp, parser, from_encoding=resp.info().get_param('charset'))
+        episodeTitle = soup.find_all('h2')[0].get_text()
+        if 'Online Store' in episodeTitle or 'Board Update' in episodeTitle:
+            continue
 
-    
-scriptLinks()
+        season = episodeTitle[:2]
+        episodeNum = episodeTitle[3:5]
+        print(season)
+        print(episodeNum)
+        path = '/Users/abhishekkumar/Documents/programming/himym/data/Season-' + season + '/Episode-' + episodeNum + '.txt'
+        with open(path,'w') as out:
+            for p in soup.find_all('p')[1:len(soup.find_all('p'))-3]:
+                out.write(p.get_text()+'\n')
+
+retrieveScripts()
