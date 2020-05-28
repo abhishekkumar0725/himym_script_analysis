@@ -40,11 +40,10 @@ def retrieveScripts():
 
         season = episodeTitle[:2]
         episodeNum = episodeTitle[3:5]
-        print(season)
-        print(episodeNum)
         path = '/Users/abhishekkumar/Documents/programming/himym/data/Season-' + season + '/Episode-' + episodeNum + '.txt'
         with open(path,'w') as out:
             for p in soup.find_all('p')[1:len(soup.find_all('p'))-3]:
                 out.write(p.get_text()+'\n')
 
-retrieveScripts()
+if __name__ == '__main__':
+    retrieveScripts()
