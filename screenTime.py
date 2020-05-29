@@ -2,34 +2,22 @@ import pandas as pd
 import numpy as np
 import os
 
-def main():
-    directory = '/Users/abhishekkumar/Documents/programming/himym/data'
-    for folder in os.listdir(directory):
-        foldername = os.fsdecode(folder)
-        current_folder = os.path.join(directory, foldername)
-        df = pd.DataFrame(columns=['Season', 'Episode', 'Line Number', 'Speaker', 'Line'])
-        season = int(folder[-2:])
-        for file in os.listdir(current_folder):
-            filename = os.fsdecode(file)
-            current_file = os.path.join(current_folder, file)
-            episode = int(file[-6:-4])
-            i = 1
-            with open(current_file, 'r') as f:
-                for line in f:
-                #line = f.read()
-                    if ':' in line:
-                        df = df.append({
-                            'Season': season,
-                            'Episode': episode,
-                            'Line Number': i,
-                            'Speaker': line[:line.index(':')+1],
-                            'Line': line[line.index(':')+2:]
-                        }, ignore_index=True)
-                        i += 1
-        df.to_csv(foldername+'.csv', encoding="utf-8", index = False)
+def lineCounter(df):
+    counts = {}
+    main_charachters = ['ted', 'robin', 'barney', 'marshall', 'lily']
+    for row in df.itertuples():
+        charachter = str(row[4]).lower()
+        if charachter in main_charachters:
+            if charachter not in counts:
+                counts[charachter]  = 0
+            counts[charachter] += 1
+    return counts
+        
 
 if __name__=='__main__':
-    main()
-
-
+    directory = '/Users/abhishekkumar/Documents/programming/himym/data/dataframes/'
+    for file in os.listdir(directory):
+        fileName = os.fsdecode(file)
+        df = pd.read_csv(directory+file)
+        print(dict(sorted(lineCounter(df).items())))
 
